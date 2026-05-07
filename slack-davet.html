@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Analitik Fitness – Slack Topluluğuna Katıl</title>
+  <style>
+    :root {
+      --siyah: #0a0a0a;
+      --koyu: #111111;
+      --kart: #1a1a1a;
+      --sinir: #2a2a2a;
+      --sari: #f5c800;
+      --sari-hover: #e6ba00;
+      --yazi: #e8e8e8;
+      --yazi-soluk: #888888;
+    }
+
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      background-color: var(--siyah);
+      color: var(--yazi);
+      font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+    }
+
+    .kart {
+      background-color: var(--kart);
+      border: 1px solid var(--sinir);
+      border-radius: 12px;
+      padding: 40px 36px;
+      width: 100%;
+      max-width: 480px;
+    }
+
+    .logo-alan {
+      text-align: center;
+      margin-bottom: 32px;
+    }
+
+    .logo-alan h1 {
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+    }
+
+    .logo-alan h1 span {
+      color: var(--sari);
+    }
+
+    .logo-alan p {
+      color: var(--yazi-soluk);
+      font-size: 14px;
+      margin-top: 6px;
+    }
+
+    .ayrac {
+      width: 40px;
+      height: 3px;
+      background-color: var(--sari);
+      border-radius: 2px;
+      margin: 16px auto;
+    }
+
+    .bilgi-kutu {
+      background-color: rgba(245, 200, 0, 0.06);
+      border: 1px solid rgba(245, 200, 0, 0.2);
+      border-radius: 8px;
+      padding: 14px 16px;
+      font-size: 13px;
+      color: var(--yazi-soluk);
+      line-height: 1.6;
+      margin-bottom: 28px;
+    }
+
+    .bilgi-kutu strong {
+      color: var(--sari);
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--yazi-soluk);
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      margin-bottom: 8px;
+    }
+
+    input[type="email"],
+    input[type="text"] {
+      width: 100%;
+      background-color: var(--koyu);
+      border: 1px solid var(--sinir);
+      border-radius: 8px;
+      padding: 13px 16px;
+      color: var(--yazi);
+      font-size: 15px;
+      outline: none;
+      transition: border-color 0.2s;
+      margin-bottom: 20px;
+    }
+
+    input[type="email"]:focus,
+    input[type="text"]:focus {
+      border-color: var(--sari);
+    }
+
+    input[type="email"]::placeholder,
+    input[type="text"]::placeholder {
+      color: #444;
+    }
+
+    button[type="submit"] {
+      width: 100%;
+      background-color: var(--sari);
+      color: #000;
+      font-size: 15px;
+      font-weight: 700;
+      border: none;
+      border-radius: 8px;
+      padding: 14px;
+      cursor: pointer;
+      transition: background-color 0.2s, transform 0.1s;
+      letter-spacing: 0.3px;
+    }
+
+    button[type="submit"]:hover {
+      background-color: var(--sari-hover);
+    }
+
+    button[type="submit"]:active {
+      transform: scale(0.98);
+    }
+
+    button[type="submit"]:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    #mesaj {
+      margin-top: 20px;
+      padding: 13px 16px;
+      border-radius: 8px;
+      font-size: 14px;
+      text-align: center;
+      display: none;
+    }
+
+    #mesaj.basarili {
+      background-color: rgba(0, 200, 100, 0.1);
+      border: 1px solid rgba(0, 200, 100, 0.3);
+      color: #00c864;
+    }
+
+    #mesaj.hata {
+      background-color: rgba(255, 60, 60, 0.1);
+      border: 1px solid rgba(255, 60, 60, 0.3);
+      color: #ff5050;
+    }
+
+    .alt-not {
+      text-align: center;
+      font-size: 12px;
+      color: var(--yazi-soluk);
+      margin-top: 24px;
+    }
+
+    .alt-not a {
+      color: var(--sari);
+      text-decoration: none;
+    }
+
+    .alt-not a:hover {
+      text-decoration: underline;
+    }
+  </style>
+</head>
+<body>
+
+<div class="kart">
+  <div class="logo-alan">
+    <h1>ANALİTİK <span>FITNESS</span></h1>
+    <div class="ayrac"></div>
+    <p>Slack Topluluğuna Katıl</p>
+  </div>
+
+  <div class="bilgi-kutu">
+    Bu alan yalnızca <strong>YouTube üyeleri</strong> içindir.<br>
+    Üyelere özel videodaki gizli kodu girerek Slack topluluğumuza katılabilirsin.
+  </div>
+
+  <form id="davetForm" onsubmit="formuGonder(event)">
+    <label for="email">E-posta Adresin</label>
+    <input type="email" id="email" name="email" placeholder="ornek@gmail.com" required>
+
+    <label for="kod">Üyelik Kodu</label>
+    <input type="text" id="kod" name="kod" placeholder="Örn: MAYIS2025" required autocomplete="off">
+
+    <button type="submit" id="gonderBtn">Slack Davetini Gönder</button>
+  </form>
+
+  <div id="mesaj"></div>
+
+  <div class="alt-not">
+    <a href="https://sites.google.com/view/analitikfitness/ana-sayfa">← Ana Sayfaya Dön</a>
+  </div>
+</div>
+
+<script>
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxEKIrS94FVT4ISRGPU3AFR1NQTkOE5gTPNCI9j8HqQ1MjmZKCpwYMkbi5sRr6I-3yX/exec';
+
+  async function formuGonder(e) {
+    e.preventDefault();
+
+    const email = document.getElementById('email').value.trim();
+    const kod = document.getElementById('kod').value.trim().toUpperCase();
+    const btn = document.getElementById('gonderBtn');
+    const mesaj = document.getElementById('mesaj');
+
+    if (!email || !kod) return;
+
+    btn.disabled = true;
+    btn.textContent = 'Gönderiliyor...';
+    mesaj.style.display = 'none';
+
+    try {
+      const res = await fetch(APPS_SCRIPT_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, kod })
+      });
+
+      const veri = await res.json();
+
+      mesaj.style.display = 'block';
+      if (veri.basarili) {
+        mesaj.className = 'basarili';
+        mesaj.textContent = veri.mesaj || 'Davet linki e-postana gönderildi!';
+        document.getElementById('davetForm').reset();
+      } else {
+        mesaj.className = 'hata';
+        mesaj.textContent = veri.mesaj || 'Bir hata oluştu. Lütfen tekrar dene.';
+      }
+    } catch (err) {
+      mesaj.style.display = 'block';
+      mesaj.className = 'hata';
+      mesaj.textContent = 'Bağlantı hatası. Lütfen tekrar dene.';
+    }
+
+    btn.disabled = false;
+    btn.textContent = 'Slack Davetini Gönder';
+  }
+</script>
+
+</body>
+</html>
