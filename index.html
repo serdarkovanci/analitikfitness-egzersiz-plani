@@ -581,63 +581,58 @@
 </div>
 
 <script>
-// ── PRINT FIX: window.print() is blocked in Google Sites iframes ──
-// Opens a new window with plan content and triggers print there.
+// ── PRINT FIX v2 ──
+// Google Sites sandbox blocks window.print() (no allow-modals) and
+// window.open() popup blocker. Solution: save plan to localStorage,
+// open same page with ?autoprint=1 via anchor navigation (bypasses restrictions),
+// on load detect flag and auto-print from the unrestricted top window.
+
 function printPlan() {
   const resultEl = document.getElementById('result');
-  if (!resultEl) return;
+  if (!resultEl || resultEl.style.display === 'none') return;
 
-  // Collect all <style> blocks from this page
-  const styles = [...document.querySelectorAll('style')]
-    .map(s => s.innerHTML)
-    .join('\n');
+  // Save current plan to localStorage so the new tab can read it
+  try {
+    localStorage.setItem('af_print_html', resultEl.innerHTML);
+  } catch(e) {}
 
-  // Extra print-friendly overrides for the new window
-  const printStyles = `
-    body { background: #fff !important; color: #000 !important; font-family: 'Segoe UI', system-ui, sans-serif; }
-    .app-wrapper { max-width: 860px; margin: 0 auto; padding: 20px; }
-    .print-btn, .back-btn, .week-tabs, .submit-btn, .day-toggle { display: none !important; }
-    .day-body { display: block !important; }
-    .day-card { break-inside: avoid; border: 1px solid #ddd; margin-bottom: 12px; border-radius: 8px; }
-    .header { background: #0a0a0a; color: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-    .result-hero { background: #f9f9f9; border: 1px solid #eee; padding: 16px; border-radius: 8px; margin-bottom: 16px; }
-  `;
-
-  const html = `<!DOCTYPE html>
-<html lang="tr">
-<head>
-  <meta charset="UTF-8">
-  <title>Analitik Fitness — Egzersiz Planım</title>
-  <style>${styles}\n${printStyles}</style>
-</head>
-<body>
-<div class="app-wrapper">
-  <div class="header">
-    <div class="header-logo">⚡ Analitik Fitness</div>
-    <h1>Kişisel Vücut Ağırlığı Egzersiz Planı</h1>
-  </div>
-  ${resultEl.innerHTML}
-</div>
-<script>
-  window.onload = function() {
-    // Small delay so styles render before print dialog
-    setTimeout(function() { window.print(); }, 400);
-  };
-<\/script>
-</body>
-</html>`;
-
-  const pw = window.open('', '_blank');
-  if (!pw) {
-    // Popup blocker fallback — fallback to same-window print
-    alert('Lütfen tarayıcınızın açılır pencere iznini verin ve tekrar deneyin, veya Cmd+P / Ctrl+P ile yazdırın.');
-    return;
-  }
-  pw.document.open();
-  pw.document.write(html);
-  pw.document.close();
+  // Open this page with ?autoprint=1 via anchor (more reliable than window.open in iframes)
+  const printUrl = window.location.origin + window.location.pathname + '?autoprint=1';
+  const a = document.createElement('a');
+  a.href = printUrl;
+  a.target = '_blank';
+  a.rel = 'noopener';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
 }
-// ── END PRINT FIX ──
+
+// ── Auto-print when opened with ?autoprint=1 ──
+(function() {
+  if (!window.location.search.includes('autoprint=1')) return;
+
+  window.addEventListener('DOMContentLoaded', function() {
+    const savedHtml = localStorage.getItem('af_print_html');
+    if (!savedHtml) return;
+
+    // Expand all day-bodies before printing
+    const resultEl = document.getElementById('result');
+    if (!resultEl) return;
+    resultEl.innerHTML = savedHtml;
+    resultEl.style.display = 'block';
+
+    // Expand all collapsed day sections
+    resultEl.querySelectorAll('.day-body').forEach(el => { el.style.display = 'block'; });
+
+    // Hide form
+    const formEl = document.getElementById('formSection');
+    if (formEl) formEl.style.display = 'none';
+
+    // Trigger print after short render delay
+    setTimeout(function() { window.print(); }, 600);
+  });
+})();
+// ── END PRINT FIX v2 ──
 
 const EX = {
   // --- ISINMA ---
@@ -832,6 +827,11 @@ function planOlustur() {
   document.getElementById('formSection').style.display = 'none';
   document.getElementById('result').style.display = 'block';
   window.scrollTo(0, 0);
+
+  // Auto-save plan state for cross-tab print
+  try {
+    localStorage.setItem('af_plan_data', JSON.stringify(planData));
+  } catch(e) {}
 }
 
 function buildGunPlan(dayLabel, seviye, hedef, hafta) {
